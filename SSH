@@ -1,0 +1,106 @@
+
+
+# Проверяем, что openssh-server установлен
+
+sudo yum install openssh-server
+sudo systemctl status sshd
+
+# systemctl Она позволяет управлять основными процессами Linux.
+
+
+# Пробует подключиться к удаленному серверу.
+
+ssh cent02
+hostname
+exit
+
+# Смотрим как подключились. Accepted password for root from
+
+tail /var/log/secure
+cat /var/log/secure
+
+# Генерирует пару ключей.
+
+ssh-keygen -N "1512200199" -q
+
+ -N new_passphrase
+             Provides the new passphrase.
+ -q      Silence ssh-keygen.
+
+Enter file in which to save the key (/root/.ssh/id_rsa):
+
+cd ~
+ls -la
+cd .ssh
+ls -la
+cat id_rsa
+cat id_rsa.pub 
+
+/id_rsa - private key
+/id_rsa.pub - public key
+
+
+# Кладем открытый ключ на сервер, куда будим подключаться.
+
+
+sudo ssh-copy-id cent02
+
+#Проверить что он положился.
+
+cat authorized_keys  
+
+# Пробует подключиться к удаленному серверу.
+
+ssh cent02
+hostname
+sudo tail /var/log/secure
+exit
+
+
+# Создаем учетку отдельную.
+
+sudo adduser irud
+passwd irud
+gpasswd -a ilya wheel
+
+
+# Проверяем, что мы по сетификату.
+sudo tail /var/log/secure
+
+
+# Готовим директорию и файл для ключа
+
+mkdir -p ~/.ssh
+cd ~/.ssh/
+sudo touch authorized_keys
+
+# Cтавим правильные права
+
+sudo chmod 600 /home/irud/.ssh/authorized_keys
+sudo chmod 700 /home/ilya/.ssh
+
+
+# Генерируем ключи
+
+
+sudo nano /home/irud/.ssh/authorized_keys
+
+#Проверяем.
+
+# Забираем по паролю заходить.
+
+
+sudo nano  /etc/ssh/sshd_config
+ 
+service sshd restart
+
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/v2v_guide/preparation_before_the_p2v_migration-enable_root_login_over_ssh
+
+
+#Удалить ключи сервера.
+
+/bin/rm -v /etc/ssh/ssh_host_*
+
+ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
+
